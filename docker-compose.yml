@@ -1,0 +1,31 @@
+services:
+  neo4j:
+    image: neo4j:5.18
+    container_name: global-student-portal-neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password123
+    volumes:
+      - neo4j_data:/data
+      - ./migrations:/migrations:ro
+      - ./queries:/queries:ro
+
+  migrator:
+    image: neo4j:5.18
+    depends_on:
+      - neo4j
+    volumes:
+      - ./migrations:/migrations:ro
+    entrypoint: ["/bin/bash", "-lc"]
+    command: >
+      until cypher-shell -a bolt://neo4j:7687 -u neo4j -p password123 "RETURN 1" > /dev/null 2>&1;
+      do
+        sleep 3;
+      done &&
+      cypher-shell -a bolt://neo4j:7687 -u neo4j -p password123 -f /migrations/001_seed_graph.cypher &&
+      cypher-shell -a bolt://neo4j:7687 -u neo4j -p password123 -f /migrations/002_compute_metrics.cypher
+
+volumes:
+  neo4j_data:

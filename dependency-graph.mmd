@@ -1,0 +1,55 @@
+flowchart LR
+    WP[Web Portal] --> API[API Gateway]
+    MA[Mobile App] --> API
+
+    API --> AUTH[Auth Service]
+    API --> UM[University Management]
+    API --> SI[Student Information]
+    API --> CM[Course Management]
+    API --> ENR[Enrollment]
+    API --> GT[Grading and Transcript]
+    API --> FIN[Finance]
+    API --> NOTIF[Notification]
+    API --> DOC[Document Service]
+    API --> AUD[Audit Log]
+
+    AUTH --> DB[(SQL Database)]
+    AUTH --> REDIS[(Redis Cache)]
+    AUTH --> AUD
+
+    UM --> DB
+    UM --> AUD
+
+    SI --> DB
+    SI --> REDIS
+    SI --> AUD
+
+    CM --> DB
+    CM --> REDIS
+    CM --> AUD
+
+    ENR --> SI
+    ENR --> CM
+    ENR --> DB
+    ENR --> NOTIF
+    ENR --> AUD
+
+    GT --> SI
+    GT --> CM
+    GT --> DOC
+    GT --> DB
+    GT --> AUD
+
+    FIN --> SI
+    FIN --> PAY[Payment Gateway]
+    FIN --> NOTIF
+    FIN --> DB
+    FIN --> AUD
+
+    NOTIF --> MSG[Email/SMS Provider]
+    NOTIF --> AUD
+
+    DOC --> FS[(File Storage)]
+    DOC --> AUD
+
+    AUD --> DB
